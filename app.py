@@ -99,6 +99,8 @@ def download_video(url, download_id, quality_height=0):
             'retries': 10,
             'file_access_retries': 10,
             'fragment_retries': 10,
+            # Spoof a modern browser
+            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         }
 
         # Check for cookies file (Render Secret File or local)
@@ -185,6 +187,8 @@ def get_video_info():
         ydl_opts = {
             'quiet': True,
             'no_warnings': True,
+            # Spoof a modern browser to avoid bot detection
+            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         }
 
         # Check for cookies file (Render Secret File or local)
