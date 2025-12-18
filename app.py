@@ -131,8 +131,9 @@ def download_video(url, download_id, quality_height=0):
         # Remove None values
         ydl_opts = {k: v for k, v in ydl_opts.items() if v is not None}
         
-        # First, get video info
-        with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
+        # First, get video info (use same opts with cookies!)
+        info_opts = {k: v for k, v in ydl_opts.items() if k != 'progress_hooks'}
+        with yt_dlp.YoutubeDL(info_opts) as ydl:
             info = ydl.extract_info(url, download=False)
             title = sanitize_filename(info.get('title', 'video'))
             downloads[download_id]['title'] = title
