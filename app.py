@@ -113,7 +113,11 @@ def download_video(url, download_id, quality_height=0):
         }
 
         # Check for cookies file (Render Secret File or local)
-        # Render mounts secret files at /etc/secrets/
+        # Render mounts secret files at /etc/secrets/ (Read-only)
+        # yt-dlp tries to write to the cookie file, so we must copy it to a writable location
+        import shutil
+        import tempfile
+        
         cookie_locations = [
             '/etc/secrets/cookies.txt',  # Render production path
             'cookies.txt'                # Local development path
@@ -121,8 +125,20 @@ def download_video(url, download_id, quality_height=0):
         
         for cookie_path in cookie_locations:
             if os.path.exists(cookie_path):
-                ydl_opts['cookiefile'] = cookie_path
-                print(f"Using cookies from: {cookie_path}")
+                # If we are on Render (read-only mount), copy to /tmp
+                if cookie_path.startswith('/etc/secrets'):
+                    try:
+                        temp_dir = tempfile.gettempdir()
+                        writable_cookie_path = os.path.join(temp_dir, 'cookies.txt')
+                        shutil.copy2(cookie_path, writable_cookie_path)
+                        ydl_opts['cookiefile'] = writable_cookie_path
+                        print(f"Copied cookies to: {writable_cookie_path}")
+                    except Exception as e:
+                        print(f"Failed to copy cookies: {e}")
+                        ydl_opts['cookiefile'] = cookie_path
+                else:
+                    ydl_opts['cookiefile'] = cookie_path
+                print(f"Using cookies from: {ydl_opts.get('cookiefile')}")
                 break
         
         if postprocessors:
