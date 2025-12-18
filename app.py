@@ -101,15 +101,11 @@ def download_video(url, download_id, quality_height=0):
         # Configure yt-dlp options
         ydl_opts = {
             'format': format_str,
-            'merge_output_format': 'mp4' if quality_height > 0 else None,
             'outtmpl': output_template,
             'progress_hooks': [lambda d: progress_hook(d, download_id)],
             'quiet': True,
             'no_warnings': True,
-            'extract_flat': False,
             'retries': 10,
-            'file_access_retries': 10,
-            'fragment_retries': 10,
         }
 
         # Check for cookies file (Render Secret File or local)
