@@ -92,9 +92,9 @@ def download_video(url, download_id, quality_height=0):
                 'preferredquality': '320',
             }]
         else:
-            # Video with specific height - Relaxed constraints!
-            # Don't force [ext=mp4] input. Let it download WebM and convert to MP4.
-            format_str = f'bestvideo[height<={quality_height}]+bestaudio/best[height<={quality_height}]/best'
+            # Video - just get the best available, no restrictions
+            # Height selection is broken on server, so we ignore it for now
+            format_str = 'best'
             output_template = str(DOWNLOAD_DIR / '%(title)s.%(ext)s')
             postprocessors = []
         
