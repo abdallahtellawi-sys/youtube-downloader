@@ -355,11 +355,15 @@ def get_file(download_id):
     # Determine file type and set appropriate MIME type
     if filename.lower().endswith('.mp3'):
         mimetype = 'audio/mpeg'
+    elif filename.lower().endswith('.webm'):
+        mimetype = 'video/webm'
+    elif filename.lower().endswith('.mkv'):
+        mimetype = 'video/x-matroska'
     else:
         mimetype = 'video/mp4'
-        # Ensure video files have .mp4 extension
-        if not filename.lower().endswith('.mp4'):
-            filename = filename + '.mp4'
+        # Only add extension if it lacks one, don't force .mp4 on valid .webm
+        if '.' not in filename:
+             filename = filename + '.mp4'
     
     # Create ASCII-safe version for basic filename parameter
     ascii_filename = ''.join(c if ord(c) < 128 else '_' for c in filename)
@@ -379,12 +383,22 @@ def get_file(download_id):
 def list_downloads():
     """List all downloads in the downloads folder"""
     files = []
-    for f in DOWNLOAD_DIR.glob('*.mp4'):
-        files.append({
-            'name': f.name,
-            'size': f.stat().st_size,
-            'modified': f.stat().st_mtime
-        })
+    # Support multiple extensions since we use 'best' format now
+    extensions = ['*.mp4', '*.webm', '*.mkv', '*.mp3', '*.m4a']
+    found_files = set()
+    
+    for ext in extensions:
+        for f in DOWNLOAD_DIR.glob(ext):
+            if f.name not in found_files:
+                files.append({
+                    'name': f.name,
+                    'size': f.stat().st_size,
+                    'modified': f.stat().st_mtime
+                })
+                found_files.add(f.name)
+    
+    # Sort by modification time (newest first)
+    files.sort(key=lambda x: x['modified'], reverse=True)
     return jsonify(files)
 
 
