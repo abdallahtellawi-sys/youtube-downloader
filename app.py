@@ -92,9 +92,9 @@ def download_video(url, download_id, quality_height=0):
                 'preferredquality': '320',
             }]
         else:
-            # Video - just get the best available, no restrictions
-            # Height selection is broken on server, so we ignore it for now
-            format_str = 'best'
+            # Video - just get the best available, with extensive fallbacks
+            # If 'best' fails, try '18' (legacy 360p mp4) which usually exists everywhere
+            format_str = 'best/bestvideo+bestaudio/18'
             output_template = str(DOWNLOAD_DIR / '%(title)s.%(ext)s')
             postprocessors = []
         
