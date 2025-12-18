@@ -100,6 +100,19 @@ def download_video(url, download_id, quality_height=0):
             'file_access_retries': 10,
             'fragment_retries': 10,
         }
+
+        # Check for cookies file (Render Secret File or local)
+        # Render mounts secret files at /etc/secrets/
+        cookie_locations = [
+            '/etc/secrets/cookies.txt',  # Render production path
+            'cookies.txt'                # Local development path
+        ]
+        
+        for cookie_path in cookie_locations:
+            if os.path.exists(cookie_path):
+                ydl_opts['cookiefile'] = cookie_path
+                print(f"Using cookies from: {cookie_path}")
+                break
         
         if postprocessors:
             ydl_opts['postprocessors'] = postprocessors
@@ -173,6 +186,17 @@ def get_video_info():
             'quiet': True,
             'no_warnings': True,
         }
+
+        # Check for cookies file (Render Secret File or local)
+        cookie_locations = [
+            '/etc/secrets/cookies.txt',  # Render production path
+            'cookies.txt'                # Local development path
+        ]
+        
+        for cookie_path in cookie_locations:
+            if os.path.exists(cookie_path):
+                ydl_opts['cookiefile'] = cookie_path
+                break
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
