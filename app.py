@@ -106,6 +106,8 @@ def download_video(url, download_id, quality_height=0):
             'quiet': True,
             'no_warnings': True,
             'retries': 10,
+            # FORCE IPv4: Render uses IPv6 by default which YouTube blocks extensively
+            'source_address': '0.0.0.0',
         }
 
         # Check for cookies file (Render Secret File or local)
@@ -209,6 +211,8 @@ def get_video_info():
         ydl_opts = {
             'quiet': True,
             'no_warnings': True,
+            # FORCE IPv4: Render uses IPv6 by default which YouTube blocks extensively
+            'source_address': '0.0.0.0',
         }
 
         # Check for cookies file (Render Secret File or local)
