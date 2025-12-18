@@ -5,6 +5,7 @@ Downloads YouTube videos in highest quality with audio using yt-dlp
 
 from flask import Flask, render_template, request, jsonify, send_file, make_response
 from flask_cors import CORS
+from flask_basicauth import BasicAuth
 import yt_dlp
 import os
 import re
@@ -15,6 +16,15 @@ from pathlib import Path
 
 app = Flask(__name__)
 CORS(app)
+
+# Basic Auth Configuration
+class PasswordAuth(BasicAuth):
+    def check_credentials(self, username, password):
+        # Ignore username, just check the password
+        return password == 'Asdasd!233'
+
+app.config['BASIC_AUTH_FORCE'] = True  # Protect the entire site
+basic_auth = PasswordAuth(app)
 
 # Store download progress and status
 downloads = {}
@@ -99,12 +109,6 @@ def download_video(url, download_id, quality_height=0):
             'retries': 10,
             'file_access_retries': 10,
             'fragment_retries': 10,
-            # Use Android client API
-            'extractor_args': {
-                'youtube': {
-                    'player_client': ['android', 'ios']
-                }
-            }
         }
 
         # Check for cookies file (Render Secret File or local)
@@ -191,12 +195,6 @@ def get_video_info():
         ydl_opts = {
             'quiet': True,
             'no_warnings': True,
-            # Use Android client API which often bypasses web-based bot detection
-            'extractor_args': {
-                'youtube': {
-                    'player_client': ['android', 'ios']
-                }
-            }
         }
 
         # Check for cookies file (Render Secret File or local)
